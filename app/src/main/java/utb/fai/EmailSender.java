@@ -1,7 +1,11 @@
 package utb.fai;
 
-import java.net.*;
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.net.Socket;
+import java.net.UnknownHostException;
 
 public class EmailSender {
 
@@ -20,7 +24,7 @@ public class EmailSender {
         socket = new Socket(host, port);
         output = new PrintWriter(socket.getOutputStream(), true);
         input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-
+        output.println("HELO");
         System.out.println(input.readLine());
     }
 
@@ -32,27 +36,23 @@ public class EmailSender {
      */
     public void send(String from, String to, String subject, String text) throws IOException {
         // Mail EHLO
-        output.println("EHLO " + from);
-        System.out.println(input.readLine());
+        
+        //System.out.println(input.readLine());
 
         // Mail FROM
-        output.println("FROM:<" + from + ">");
-        System.out.println(input.readLine());
+        output.println("MAIL FROM:<" + from + ">");
+        //System.out.println(input.readLine());
 
         //Mail TO
-        output.println("TO:<" + to + ">");
-        System.out.println(input.readLine());
+        output.println("RCPT TO:<" + to + ">");
+        //System.out.println(input.readLine());
 
         // Data
         output.println("DATA");
-        System.out.println(input.readLine());
+        //System.out.println(input.readLine());
 
         // Subject
-        output.println("SUBJECT:<" + subject + ">");
-        output.println();
-        output.println(text);
-        output.println("."); // mail must end with dot
-        System.out.println(input.readLine());
+        output.println("Subject:" + subject + "\r\n\r\n" + text + "\r\n\r\n.\r\n\r\n");
     }
 
     /*
@@ -62,7 +62,8 @@ public class EmailSender {
         output.println("QUIT");
         try {
             socket.close();
-        } catch (IOException e) {
+        }
+        catch (IOException e) {
             e.printStackTrace();
         }
     }
